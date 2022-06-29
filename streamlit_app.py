@@ -10,6 +10,11 @@ def get_fruityvice_advice(this_fruit_choice):
   
   return fruityvice_normalized
 
+def get_fruit_load_list():
+  with my_cnx.cursor() as my_cur:
+    my_cur.execute("select * from fruit_load_list")
+    return my_cur.fetchall()
+
 streamlit.title('My Parents Healthy Diner')
 
 streamlit.header('Breakfast Menu')
@@ -46,14 +51,12 @@ try:
 except URLError as e:
     streamlist.error()
 
-streamlit.stop()
-
-my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
-my_cur = my_cnx.cursor()
-my_cur.execute("select * from fruit_load_list")
-my_data_rows = my_cur.fetchall()
 streamlit.header("The food load list contains:")
-streamlit.dataframe(my_data_rows)
+    
+if streamlit.button("Get Fruit Load List"):
+    my_cnx = snowflake.connector.connect(**streamlit.secrets["snowflake"])
+    my_data_rows = get_fruit_load_list()
+    streamlit.dataframe(my_data_rows)
 
 fruit_to_add = streamlit.text_input('What fruit would you like to add?')
 streamlit.write('Thank you for adding', fruit_to_add)
